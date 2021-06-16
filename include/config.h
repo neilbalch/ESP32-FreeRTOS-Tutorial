@@ -6,3 +6,5 @@ static const BaseType_t app_cpu = 0;
 #else
 static const BaseType_t app_cpu = 1;
 #endif
+
+static const int led_pin = 9;

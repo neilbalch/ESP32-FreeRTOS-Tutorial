@@ -1,7 +1,5 @@
 #include "Part2.h"
 
-static const int led_pin = 9;
-
 // Task: blink an LED
 void toggleLED(void* param) {
   while(1) {

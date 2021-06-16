@@ -1,6 +1,5 @@
 #include "Part3Challenge.h"
 
-static const int led_pin = 9;
 static int led_delay = 500;
 
 void inputTask(void* param) {

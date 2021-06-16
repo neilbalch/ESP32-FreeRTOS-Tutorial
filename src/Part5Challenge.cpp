@@ -5,7 +5,6 @@ static QueueHandle_t terminal_queue;
 static const uint8_t led_queue_len = 5;
 static QueueHandle_t led_queue;
 
-static const int led_pin = 9;
 static int led_delay = 500;
 static int led_blink_count = 0;
 
