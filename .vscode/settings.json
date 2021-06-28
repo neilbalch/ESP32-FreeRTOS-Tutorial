@@ -1,0 +1,11 @@
+{
+  "files.associations": {
+    "*.tcc": "cpp",
+    "fstream": "cpp",
+    "ostream": "cpp"
+  },
+  "cSpell.words": [
+    "IRAM",
+    "println"
+  ]
+}

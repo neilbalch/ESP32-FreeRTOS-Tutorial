@@ -1,5 +1,5 @@
 // Choose which tutorial video will be built
-#define PART7CHALLENGE
+#define PART12CHALLENGE
 
 #pragma region // Includes
 #ifdef PART2
@@ -118,7 +118,7 @@ void setup() {
   setup10();
   #endif
   #ifdef PART10CHALLENGE
-  setup5challenge();
+  setup10challenge();
   #endif
   #ifdef PART11
   setup11();
@@ -186,7 +186,7 @@ void loop() {
   loop10();
   #endif
   #ifdef PART10CHALLENGE
-  loop5challenge();
+  loop10challenge();
   #endif
   #ifdef PART11
   loop11();
