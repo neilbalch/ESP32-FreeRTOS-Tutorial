@@ -1,3 +1,4 @@
+#pragma once
 #include <Arduino.h>
 
 // Use only core 1 for tutorial purposes
