@@ -1,11 +1,18 @@
 #define MULTICORE
 #include "Part12challenge.h"
 
+// *****************************************************************************
+// NOTE: This program attempts uses the edge detection mode in the timer
+// interrupt, which is currently broken in the current ESP32-S2 core. The
+// program has been set to not use this feature for now.
+// REF: https://community.platformio.org/t/hardware-timer-issue-with-esp32/22047
+// *****************************************************************************
+
 // You'll likely need this on vanilla FreeRTOS
 //#include <semphr.h>
 
 // Core definitions (assuming you have dual-core ESP32)
-// %%% We can use both cores now
+// We can use both cores now
 static const BaseType_t pro_cpu = 0;
 static const BaseType_t app_cpu = 1;
 
@@ -18,7 +25,7 @@ enum { MSG_LEN = 100 };      // Max characters in message body
 enum { MSG_QUEUE_LEN = 5 };  // Number of slots in message queue
 enum { CMD_BUF_LEN = 255 };  // Number of characters in command buffer
 
-static const int adc_pin = A0;
+static const int adc_pin = 1;
 
 // Message struct to wrap strings for queue
 typedef struct Message {
@@ -146,9 +153,9 @@ void calcAverage(void *parameters) {
   float avg;
 
   // Start a timer to run ISR every 100 ms
-  // %%% We move this here so it runsin core 0
+  // We move this here so it runs in core 0
   timer = timerBegin(0, timer_divider, true);
-  timerAttachInterrupt(timer, &onTimer_12, true);
+  timerAttachInterrupt(timer, &onTimer_12, /* true */ false);
   timerAlarmWrite(timer, timer_max_count, true);
   timerAlarmEnable(timer);
 
@@ -165,7 +172,7 @@ void calcAverage(void *parameters) {
     }
     avg /= BUF_LEN;
 
-    // Updating the shared float may or may not take multiple isntructions, so
+    // Updating the shared float may or may not take multiple instructions, so
     // we protect it with a mutex or critical section. The ESP-IDF critical
     // section is the easiest for this application.
     portENTER_CRITICAL(&spinlock);
@@ -192,6 +199,11 @@ void setup12challenge() {
   // Configure Serial
   Serial.begin(115200);
 
+  // Must be here to "prime" the ADC before `analogRead()` is called in the ISR.
+  // This isn't a good idea in general, since the ISR shouldn't be grabbing ADC
+  // values.
+  analogRead(adc_pin);
+
   // Wait a moment to start (so we don't miss Serial output)
   vTaskDelay(1000 / portTICK_PERIOD_MS);
   Serial.println();
@@ -217,7 +229,7 @@ void setup12challenge() {
   xTaskCreatePinnedToCore(doCLI, "Do CLI", 1024, NULL, 2, NULL, app_cpu);
 
   // Start task to calculate average. Save handle for use with notifications.
-  // %%% We set this task to run in Core 0
+  // We set this task to run in Core 0
   xTaskCreatePinnedToCore(calcAverage, "Calculate average", 1024, NULL, 1,
                           &processing_task, pro_cpu);
 

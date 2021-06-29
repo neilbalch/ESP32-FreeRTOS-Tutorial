@@ -3,6 +3,15 @@
 TickType_t cs_wait_challenge = 250;    // Time spent in critical section (ms)
 TickType_t med_wait_challenge = 5000;  // Time medium task spends working (ms)
 
+// *****************************************************************************
+// NOTE: This program triggers the ESP-IDF tick timer interrupt watchdog timer
+// because too much time is spent in a critical section and ESP-IDF assumes
+// something has broken. (crashes and resets the MCU) The same is true of the
+// official solution:
+// https://github.com/ShawnHymel/introduction-to-rtos/blob/main/11-priority-inversion/esp32-freertos-11-solution-critical-section/esp32-freertos-11-solution-critical-section.ino
+// REF: https://github.com/espressif/esp-idf/issues/7199
+// *****************************************************************************
+
 static portMUX_TYPE spin_lock =
     portMUX_INITIALIZER_UNLOCKED;  // Note that the use of spinlocks and
                                    // portENTER_CRITICAL() / portEXIT_CRITICAL()
