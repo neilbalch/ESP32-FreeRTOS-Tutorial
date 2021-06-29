@@ -1,5 +1,4 @@
-#define MULTICORE
-#include "Part12challenge.h"
+#include "Part9Challenge.h"
 
 // *****************************************************************************
 // NOTE: This program attempts uses the edge detection mode in the timer
@@ -9,17 +8,12 @@
 // *****************************************************************************
 
 // You'll likely need this on vanilla FreeRTOS
-//#include <semphr.h>
-
-// Core definitions (assuming you have dual-core ESP32)
-// We can use both cores now
-static const BaseType_t pro_cpu = 0;
-static const BaseType_t app_cpu = 1;
+//#include semphr.h
 
 static const char command[] = "avg";              // Command
 static const uint16_t timer_divider = 8;          // Divide 80 MHz by this
 static const uint64_t timer_max_count = 1000000;  // Timer counts to this value
-static const uint32_t cli_delay = 10;             // ms delay
+static const uint32_t cli_delay = 20;             // ms delay
 enum { BUF_LEN = 10 };       // Number of elements in sample buffer
 enum { MSG_LEN = 100 };      // Max characters in message body
 enum { MSG_QUEUE_LEN = 5 };  // Number of slots in message queue
@@ -46,14 +40,14 @@ static float adc_avg;
 
 // Swap the write_to and read_from pointers in the double buffer
 // Only ISR calls this at the moment, so no need to make it thread-safe
-void IRAM_ATTR swap_12() {
+void IRAM_ATTR swap() {
   volatile uint16_t *temp_ptr = write_to;
   write_to = read_from;
   read_from = temp_ptr;
 }
 
 // This function executes when timer reaches max (and resets)
-void IRAM_ATTR onTimer_12() {
+void IRAM_ATTR onTimer() {
   static uint16_t idx = 0;
   BaseType_t task_woken = pdFALSE;
 
@@ -76,7 +70,7 @@ void IRAM_ATTR onTimer_12() {
     if (buf_overrun == 0) {
       // Reset index and swap buffer pointers
       idx = 0;
-      swap_12();
+      swap();
 
       // A task notification works like a binary semaphore but is faster
       vTaskNotifyGiveFromISR(processing_task, &task_woken);
@@ -93,7 +87,7 @@ void IRAM_ATTR onTimer_12() {
 }
 
 // Serial terminal task
-void doCLI_12(void *parameters) {
+void doCLI(void *parameters) {
   Message rcv_msg;
   char c;
   char cmd_buf[CMD_BUF_LEN];
@@ -148,16 +142,9 @@ void doCLI_12(void *parameters) {
 }
 
 // Wait for semaphore and calculate average of ADC values
-void calcAverage_12(void *parameters) {
+void calcAverage(void *parameters) {
   Message msg;
   float avg;
-
-  // Start a timer to run ISR every 100 ms
-  // We move this here so it runs in core 0
-  timer = timerBegin(0, timer_divider, true);
-  timerAttachInterrupt(timer, &onTimer_12, /* true */ false);
-  timerAlarmWrite(timer, timer_max_count, true);
-  timerAlarmEnable(timer);
 
   // Loop forever, wait for semaphore, and print value
   while (1) {
@@ -172,7 +159,7 @@ void calcAverage_12(void *parameters) {
     }
     avg /= BUF_LEN;
 
-    // Updating the shared float may or may not take multiple instructions, so
+    // Updating the shared float may or may not take multiple isntructions, so
     // we protect it with a mutex or critical section. The ESP-IDF critical
     // section is the easiest for this application.
     portENTER_CRITICAL(&spinlock);
@@ -195,7 +182,7 @@ void calcAverage_12(void *parameters) {
   }
 }
 
-void setup12challenge() {
+void setup9challenge() {
   // Configure Serial
   Serial.begin(115200);
 
@@ -225,16 +212,21 @@ void setup12challenge() {
   msg_queue = xQueueCreate(MSG_QUEUE_LEN, sizeof(Message));
 
   // Start task to handle command line interface events. Let's set it at a
-  // higher priority but only run it once every 10 ms.
-  xTaskCreatePinnedToCore(doCLI_12, "Do CLI", 1024, NULL, 2, NULL, app_cpu);
+  // higher priority but only run it once every 20 ms.
+  xTaskCreatePinnedToCore(doCLI, "Do CLI", 1024, NULL, 2, NULL, app_cpu);
 
   // Start task to calculate average. Save handle for use with notifications.
-  // We set this task to run in Core 0
-  xTaskCreatePinnedToCore(calcAverage_12, "Calculate average", 1024, NULL, 1,
-                          &processing_task, pro_cpu);
+  xTaskCreatePinnedToCore(calcAverage, "Calculate average", 1024, NULL, 1,
+                          &processing_task, app_cpu);
+
+  // Start a timer to run ISR every 100 ms
+  timer = timerBegin(0, timer_divider, true);
+  timerAttachInterrupt(timer, &onTimer, /* true */ false);
+  timerAlarmWrite(timer, timer_max_count, true);
+  timerAlarmEnable(timer);
 
   // Delete "setup and loop" task
   vTaskDelete(NULL);
 }
 
-void loop12challenge() {}
+void loop9challenge() {}

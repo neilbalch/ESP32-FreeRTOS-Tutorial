@@ -13,7 +13,7 @@ static const uint64_t timer_max_count = 1e6; // 1e7 max count means that the tim
 static hw_timer_t *timer = NULL;
 
 // IRAM_ATTR forces the ISR to live in internal RAM and not the flash for faster access
-void IRAM_ATTR onTimer() {
+void IRAM_ATTR onTimer_9() {
   int pin_state = digitalRead(led_pin);
   digitalWrite(led_pin, !pin_state);
 }
@@ -28,7 +28,7 @@ void setup9() {
 
   // Create and start the hardware timer and attach the ISR
   timer = timerBegin(0 /* timer number */, timer_prescaler, true /* countUp? */);
-  timerAttachInterrupt(timer, &onTimer, /* true */ false /* edge */);
+  timerAttachInterrupt(timer, &onTimer_9, /* true */ false /* edge */);
   timerAlarmWrite(timer, timer_max_count, true /* autoreload? */);
 
   // Allow the ISR to trigger
