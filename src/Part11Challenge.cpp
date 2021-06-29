@@ -1,8 +1,5 @@
 #include "Part11challenge.h"
 
-TickType_t cs_wait_challenge = 250;    // Time spent in critical section (ms)
-TickType_t med_wait_challenge = 5000;  // Time medium task spends working (ms)
-
 // *****************************************************************************
 // NOTE: This program triggers the ESP-IDF tick timer interrupt watchdog timer
 // because too much time is spent in a critical section and ESP-IDF assumes
@@ -12,6 +9,10 @@ TickType_t med_wait_challenge = 5000;  // Time medium task spends working (ms)
 // REF: https://github.com/espressif/esp-idf/issues/7199
 // *****************************************************************************
 
+namespace Part11Challenge {
+TickType_t cs_wait_challenge = 250;    // Time spent in critical section (ms)
+TickType_t med_wait_challenge = 5000;  // Time medium task spends working (ms)
+
 static portMUX_TYPE spin_lock =
     portMUX_INITIALIZER_UNLOCKED;  // Note that the use of spinlocks and
                                    // portENTER_CRITICAL() / portEXIT_CRITICAL()
@@ -19,7 +20,7 @@ static portMUX_TYPE spin_lock =
                                    // the task's core.
 
 // Task L (low priority)
-void doTaskL_challenge(void *parameters) {
+void doTaskL(void *parameters) {
   TickType_t timestamp;
 
   // Do forever
@@ -37,11 +38,9 @@ void doTaskL_challenge(void *parameters) {
     // Hog the processor for a while doing nothing (uses while loop to avoid
     // yielding to another task)
     timestamp = xTaskGetTickCount() * portTICK_PERIOD_MS;
-    Serial.println("2");
     while ((xTaskGetTickCount() * portTICK_PERIOD_MS) - timestamp <
            cs_wait_challenge)
       ;
-    Serial.println("3");
 
     // Release lock
     Serial.println("Task L releasing lock.");
@@ -53,7 +52,7 @@ void doTaskL_challenge(void *parameters) {
 }
 
 // Task M (medium priority)
-void doTaskM_challenge(void *parameters) {
+void doTaskM(void *parameters) {
   TickType_t timestamp;
 
   // Do forever
@@ -73,7 +72,7 @@ void doTaskM_challenge(void *parameters) {
 }
 
 // Task H (high priority)
-void doTaskH_challenge(void *parameters) {
+void doTaskH(void *parameters) {
   TickType_t timestamp;
 
   // Do forever
@@ -104,7 +103,7 @@ void doTaskH_challenge(void *parameters) {
   }
 }
 
-void setup11challenge() {
+void setup() {
   // Configure Serial
   Serial.begin(115200);
 
@@ -117,26 +116,20 @@ void setup11challenge() {
   // The order of starting the tasks matters to force priority inversion
 
   // Start Task L (low priority)
-  xTaskCreatePinnedToCore(doTaskL_challenge, "Task L", 1024, NULL, 1, NULL,
-                          app_cpu);
+  xTaskCreatePinnedToCore(doTaskL, "Task L", 1024, NULL, 1, NULL, app_cpu);
 
-  Serial.println("A");
   // Introduce a delay to force priority inversion
   vTaskDelay(1 / portTICK_PERIOD_MS);
 
-  Serial.println("B");
   // Start Task H (high priority)
-  xTaskCreatePinnedToCore(doTaskH_challenge, "Task H", 1024, NULL, 3, NULL,
-                          app_cpu);
+  xTaskCreatePinnedToCore(doTaskH, "Task H", 1024, NULL, 3, NULL, app_cpu);
 
-  Serial.println("C");
   // Start Task M (medium priority)
-  xTaskCreatePinnedToCore(doTaskM_challenge, "Task M", 1024, NULL, 2, NULL,
-                          app_cpu);
+  xTaskCreatePinnedToCore(doTaskM, "Task M", 1024, NULL, 2, NULL, app_cpu);
 
-  Serial.println("D");
   // Delete "setup and loop" task
   vTaskDelete(NULL);
 }
 
-void loop11challenge() {}
+void loop() {}
+}  // namespace Part11Challenge

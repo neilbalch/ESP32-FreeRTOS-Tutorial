@@ -1,14 +1,16 @@
 #include "Part5.h"
 
+namespace Part5 {
 static const uint8_t msg_queue_len = 5;
 static QueueHandle_t msg_queue;
 
 void printMessages(void* param) {
   int item;
 
-  while(1) {
+  while (1) {
     // See if theree's a message in the queue in a non-blocking manner
-    if(xQueueReceive(msg_queue, (void*)&item, 0 /* tick timeout */) == pdTRUE) {
+    if (xQueueReceive(msg_queue, (void*)&item, 0 /* tick timeout */) ==
+        pdTRUE) {
       Serial.println(item);
     }
 
@@ -16,10 +18,10 @@ void printMessages(void* param) {
   }
 }
 
-void setup5() {
+void setup() {
   Serial.begin(115200);
 
-  vTaskDelay(1000 / portTICK_PERIOD_MS); // Wait a moment to start
+  vTaskDelay(1000 / portTICK_PERIOD_MS);  // Wait a moment to start
   Serial.println();
   Serial.println("--- FreeRTOS Queue Demo ---");
 
@@ -27,14 +29,16 @@ void setup5() {
   msg_queue = xQueueCreate(msg_queue_len, sizeof(int));
 
   // Start the print messages task
-  xTaskCreatePinnedToCore(printMessages, "Print Messages", 1024, NULL, 1, NULL, app_cpu);
+  xTaskCreatePinnedToCore(printMessages, "Print Messages", 1024, NULL, 1, NULL,
+                          app_cpu);
 }
 
-void loop5() {
+void loop() {
   static int num = 0;
 
-  // Try to add the an item to the queue for 10 ticks, failing if the queue is full
-  if(xQueueSend(msg_queue, (void*)&num, 10) != pdTRUE) {
+  // Try to add the an item to the queue for 10 ticks, failing if the queue is
+  // full
+  if (xQueueSend(msg_queue, (void*)&num, 10) != pdTRUE) {
     Serial.println("Queue send fail");  // Note that it's bad practice for
                                         // multiple tasks to share a resource
   }
@@ -45,3 +49,4 @@ void loop5() {
   // Makes the queue fill up too fast for the task to process them
   // vTaskDelay(500 / portTICK_PERIOD_MS);
 }
+}  // namespace Part5

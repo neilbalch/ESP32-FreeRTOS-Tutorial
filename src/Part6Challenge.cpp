@@ -2,6 +2,7 @@
 // Likely required for vanilla FreeRTOS
 // #include "semphr.h"
 
+namespace Part6Challenge {
 static SemaphoreHandle_t mutex;
 
 void blinkLED(void* param) {
@@ -10,7 +11,7 @@ void blinkLED(void* param) {
   Serial.print("Received: ");
   Serial.println(delay_period);
 
-  while(1) {
+  while (1) {
     digitalWrite(led_pin, HIGH);
     vTaskDelay(delay_period / portTICK_PERIOD_MS);
     digitalWrite(led_pin, LOW);
@@ -18,25 +19,28 @@ void blinkLED(void* param) {
   }
 }
 
-void setup6challenge() {
+void setup() {
   Serial.begin(115200);
   pinMode(led_pin, OUTPUT);
 
-  vTaskDelay(1000 / portTICK_PERIOD_MS); // Wait a moment to start
+  vTaskDelay(1000 / portTICK_PERIOD_MS);  // Wait a moment to start
   Serial.println("Enter a number for delay in ms");
 
   // Create mutex
   mutex = xSemaphoreCreateMutex();
-  if(xSemaphoreTake(mutex, portMAX_DELAY) == pdFALSE) Serial.println("Error taking mutex!");
+  if (xSemaphoreTake(mutex, portMAX_DELAY) == pdFALSE)
+    Serial.println("Error taking mutex!");
 
   // Wait for serial input and then parse it
-  while(Serial.available() <= 0);
+  while (Serial.available() <= 0)
+    ;
   int delay_period = Serial.parseInt();
   Serial.print("Sending: ");
   Serial.println(delay_period);
 
   // Start two duplicate increment tasks
-  xTaskCreatePinnedToCore(blinkLED, "Blink LED Task", 1024, (void*)&delay_period, 1, NULL, app_cpu);
+  xTaskCreatePinnedToCore(blinkLED, "Blink LED Task", 1024,
+                          (void*)&delay_period, 1, NULL, app_cpu);
   Serial.println("Done!");
 
   xSemaphoreTake(mutex, portMAX_DELAY);
@@ -45,5 +49,5 @@ void setup6challenge() {
   vTaskDelete(NULL);
 }
 
-void loop6challenge() {
-}
+void loop() {}
+}  // namespace Part6Challenge

@@ -1,4 +1,6 @@
 #include "config.h"
 
-void setup12challenge();
-void loop12challenge();
+namespace Part12Challenge {
+void setup();
+void loop();
+}  // namespace Part12Challenge

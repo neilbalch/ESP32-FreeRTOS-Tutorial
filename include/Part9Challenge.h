@@ -1,4 +1,6 @@
 #include "config.h"
 
-void setup9challenge();
-void loop9challenge();
+namespace Part9Challenge {
+void setup();
+void loop();
+}  // namespace Part9Challenge

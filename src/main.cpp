@@ -70,67 +70,67 @@
 void setup() {
   #pragma region // Setup
   #ifdef PART2
-  setup2();
+  Part2::setup();
   #endif
   #ifdef PART3
-  setup3();
+  Part3::setup();
   #endif
   #ifdef PART3CHALLENGE
-  setup3challenge();
+  Part3Challenge::setup();
   #endif
   #ifdef PART4
-  setup4();
+  Part4::setup();
   #endif
   #ifdef PART4CHALLENGE
-  setup4challenge();
+  Part4Challenge::setup();
   #endif
   #ifdef PART5
-  setup5();
+  Part5::setup();
   #endif
   #ifdef PART5CHALLENGE
-  setup5challenge();
+  Part5Challenge::setup();
   #endif
   #ifdef PART6
-  setup6();
+  Part6::setup();
   #endif
   #ifdef PART6CHALLENGE
-  setup6challenge();
+  Part6Challenge::setup();
   #endif
   #ifdef PART7
-  setup7();
+  Part7::setup();
   #endif
   #ifdef PART7CHALLENGE
-  setup7challenge();
+  Part7Challenge::setup();
   #endif
   #ifdef PART8
-  setup8();
+  Part8::setup();
   #endif
   #ifdef PART8CHALLENGE
-  setup8challenge();
+  Part8Challenge::setup();
   #endif
   #ifdef PART9
-  setup9();
+  Part9::setup();
   #endif
   #ifdef PART9CHALLENGE
-  setup9challenge();
+  Part9Challenge::setup();
   #endif
   #ifdef PART10
-  setup10();
+  Part10::setup();
   #endif
   #ifdef PART10CHALLENGE
-  setup10challenge();
+  Part10Challenge::setup();
   #endif
   #ifdef PART11
-  setup11();
+  Part11::setup();
   #endif
   #ifdef PART11CHALLENGE
-  setup11challenge();
+  Part11Challenge::setup();
   #endif
   #ifdef PART12
-  setup12();
+  Part12::setup();
   #endif
   #ifdef PART12CHALLENGE
-  setup12challenge();
+  Part12Challenge::setup();
   #endif
   #pragma endregion // Setup
 }
@@ -138,67 +138,67 @@ void setup() {
 void loop() {
   #pragma region // Loop
   #ifdef PART2
-  loop2();
+  Part2::loop();
   #endif
   #ifdef PART3
-  loop3();
+  Part3::loop();
   #endif
   #ifdef PART3CHALLENGE
-  loop3challenge();
+  Part3Challenge::loop();
   #endif
   #ifdef PART4
-  loop4();
+  Part4::loop();
   #endif
   #ifdef PART4CHALLENGE
-  loop4challenge();
+  Part4Challenge::loop();
   #endif
   #ifdef PART5
-  loop5();
+  Part5::loop();
   #endif
   #ifdef PART5CHALLENGE
-  loop5challenge();
+  Part5Challenge::loop();
   #endif
   #ifdef PART6
-  loop6();
+  Part6::loop();
   #endif
   #ifdef PART6CHALLENGE
-  loop6challenge();
+  Part6Challenge::loop();
   #endif
   #ifdef PART7
-  loop7();
+  Part7::loop();
   #endif
   #ifdef PART7CHALLENGE
-  loop7challenge();
+  Part7Challenge::loop();
   #endif
   #ifdef PART8
-  loop8();
+  Part8::loop();
   #endif
   #ifdef PART8CHALLENGE
-  loop8challenge();
+  Part8Challenge::loop();
   #endif
   #ifdef PART9
-  loop9();
+  Part9::loop();
   #endif
   #ifdef PART9CHALLENGE
-  loop9challenge();
+  Part9Challenge::loop();
   #endif
   #ifdef PART10
-  loop10();
+  Part10::loop();
   #endif
   #ifdef PART10CHALLENGE
-  loop10challenge();
+  Part10Challenge::loop();
   #endif
   #ifdef PART11
-  loop11();
+  Part11::loop();
   #endif
   #ifdef PART11CHALLENGE
-  loop11challenge();
+  Part11Challenge::loop();
   #endif
   #ifdef PART12
-  loop12();
+  Part12::loop();
   #endif
   #ifdef PART12CHALLENGE
-  loop12challenge();
+  Part12Challenge::loop();
   #endif
   #pragma endregion // Loop
 }

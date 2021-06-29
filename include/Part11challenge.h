@@ -1,4 +1,6 @@
 #include "config.h"
 
-void setup11challenge();
-void loop11challenge();
+namespace Part11Challenge {
+void setup();
+void loop();
+}  // namespace Part11Challenge

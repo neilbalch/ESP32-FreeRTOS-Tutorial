@@ -1,4 +1,6 @@
 #include "config.h"
 
-void setup11();
-void loop11();
+namespace Part11 {
+void setup();
+void loop();
+}  // namespace Part11

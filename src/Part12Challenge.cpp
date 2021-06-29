@@ -11,11 +11,7 @@
 // You'll likely need this on vanilla FreeRTOS
 //#include <semphr.h>
 
-// Core definitions (assuming you have dual-core ESP32)
-// We can use both cores now
-static const BaseType_t pro_cpu = 0;
-static const BaseType_t app_cpu = 1;
-
+namespace Part12Challenge {
 static const char command[] = "avg";              // Command
 static const uint16_t timer_divider = 8;          // Divide 80 MHz by this
 static const uint64_t timer_max_count = 1000000;  // Timer counts to this value
@@ -24,8 +20,6 @@ enum { BUF_LEN = 10 };       // Number of elements in sample buffer
 enum { MSG_LEN = 100 };      // Max characters in message body
 enum { MSG_QUEUE_LEN = 5 };  // Number of slots in message queue
 enum { CMD_BUF_LEN = 255 };  // Number of characters in command buffer
-
-static const int adc_pin = 1;
 
 // Message struct to wrap strings for queue
 typedef struct Message {
@@ -93,7 +87,7 @@ void IRAM_ATTR onTimer_12() {
 }
 
 // Serial terminal task
-void doCLI_12(void *parameters) {
+void doCLI(void *parameters) {
   Message rcv_msg;
   char c;
   char cmd_buf[CMD_BUF_LEN];
@@ -148,7 +142,7 @@ void doCLI_12(void *parameters) {
 }
 
 // Wait for semaphore and calculate average of ADC values
-void calcAverage_12(void *parameters) {
+void calcAverage(void *parameters) {
   Message msg;
   float avg;
 
@@ -195,7 +189,7 @@ void calcAverage_12(void *parameters) {
   }
 }
 
-void setup12challenge() {
+void setup() {
   // Configure Serial
   Serial.begin(115200);
 
@@ -226,15 +220,16 @@ void setup12challenge() {
 
   // Start task to handle command line interface events. Let's set it at a
   // higher priority but only run it once every 10 ms.
-  xTaskCreatePinnedToCore(doCLI_12, "Do CLI", 1024, NULL, 2, NULL, app_cpu);
+  xTaskCreatePinnedToCore(doCLI, "Do CLI", 1024, NULL, 2, NULL, app_cpu);
 
   // Start task to calculate average. Save handle for use with notifications.
   // We set this task to run in Core 0
-  xTaskCreatePinnedToCore(calcAverage_12, "Calculate average", 1024, NULL, 1,
+  xTaskCreatePinnedToCore(calcAverage, "Calculate average", 1024, NULL, 1,
                           &processing_task, pro_cpu);
 
   // Delete "setup and loop" task
   vTaskDelete(NULL);
 }
 
-void loop12challenge() {}
+void loop() {}
+}  // namespace Part12Challenge

@@ -2,24 +2,20 @@
 // Likely required for vanilla FreeRTOS
 // #include "semphr.h"
 
-// Settings
-enum {BUF_SIZE = 5};                  // Size of buffer array
+namespace Part7Challenge {
+enum { BUF_SIZE = 5 };                // Size of buffer array
 static const int num_prod_tasks = 5;  // Number of producer tasks
 static const int num_cons_tasks = 2;  // Number of consumer tasks
 static const int num_writes = 3;      // Num times each producer writes to buf
 
-// Globals
-static int buf[BUF_SIZE];             // Shared buffer
-static int head = 0;                  // Writing index to buffer
-static int tail = 0;                  // Reading index to buffer
-static SemaphoreHandle_t bin_sem;     // Waits for parameter to be read
+static int buf[BUF_SIZE];          // Shared buffer
+static int head = 0;               // Writing index to buffer
+static int tail = 0;               // Reading index to buffer
+static SemaphoreHandle_t bin_sem;  // Waits for parameter to be read
 
 static SemaphoreHandle_t buf_mutex;
 static SemaphoreHandle_t full_sem;
 static SemaphoreHandle_t empty_sem;
-
-//*****************************************************************************
-// Tasks
 
 // Producer: write a given number of times to shared buffer
 void producer(void *parameters) {
@@ -66,15 +62,13 @@ void consumer(void *parameters) {
     Serial.println(val);
     xSemaphoreGive(buf_mutex);
 
-    // Signal to the producer tasks that there is a a new empty element in the buffer
+    // Signal to the producer tasks that there is a a new empty element in the
+    // buffer
     xSemaphoreGive(empty_sem);
   }
 }
 
-//*****************************************************************************
-// Main (runs as its own task with priority 1 on core 1)
-
-void setup7challenge() {
+void setup() {
   char task_name[12];
 
   // Configure Serial
@@ -95,12 +89,7 @@ void setup7challenge() {
   // Start producer tasks (wait for each to read argument)
   for (int i = 0; i < num_prod_tasks; i++) {
     sprintf(task_name, "Producer %i", i);
-    xTaskCreatePinnedToCore(producer,
-                            task_name,
-                            1024,
-                            (void *)&i,
-                            1,
-                            NULL,
+    xTaskCreatePinnedToCore(producer, task_name, 1024, (void *)&i, 1, NULL,
                             app_cpu);
     xSemaphoreTake(bin_sem, portMAX_DELAY);
   }
@@ -108,13 +97,7 @@ void setup7challenge() {
   // Start consumer tasks
   for (int i = 0; i < num_cons_tasks; i++) {
     sprintf(task_name, "Consumer %i", i);
-    xTaskCreatePinnedToCore(consumer,
-                            task_name,
-                            1024,
-                            NULL,
-                            1,
-                            NULL,
-                            app_cpu);
+    xTaskCreatePinnedToCore(consumer, task_name, 1024, NULL, 1, NULL, app_cpu);
   }
 
   // Notify that all tasks have been created
@@ -123,7 +106,8 @@ void setup7challenge() {
   xSemaphoreGive(buf_mutex);
 }
 
-void loop7challenge() {
+void loop() {
   // Do nothing but allow yielding to lower-priority tasks
   vTaskDelay(1000 / portTICK_PERIOD_MS);
 }
+}  // namespace Part7Challenge

@@ -2,6 +2,7 @@
 // #define UNBOUNDED_PRIORITY_INVERSION
 #define NO_UNBOUNDED_PRIORITY_INVERSION
 
+namespace Part11 {
 TickType_t cs_wait = 250;    // Time spent in critical section (ms)
 TickType_t med_wait = 5000;  // Time medium task spends working (ms)
 
@@ -91,7 +92,7 @@ void doTaskH(void *parameters) {
   }
 }
 
-void setup11() {
+void setup() {
   // Configure Serial
   Serial.begin(115200);
 
@@ -100,16 +101,16 @@ void setup11() {
   Serial.println();
   Serial.println("--- FreeRTOS Priority Inversion Demo ---");
 
-  // Create semaphores and mutexes before starting tasks
-  // A mutex isn't used because FreeRTOS mutexes contain a fix for this kind of
-  // unbounded priority inversion
-  #ifdef UNBOUNDED_PRIORITY_INVERSION
+// Create semaphores and mutexes before starting tasks
+// A mutex isn't used because FreeRTOS mutexes contain a fix for this kind of
+// unbounded priority inversion
+#ifdef UNBOUNDED_PRIORITY_INVERSION
   lock = xSemaphoreCreateBinary();
   xSemaphoreGive(lock);  // Make sure binary semaphore starts at 1
-  #endif
-  #ifdef NO_UNBOUNDED_PRIORITY_INVERSION
+#endif
+#ifdef NO_UNBOUNDED_PRIORITY_INVERSION
   lock = xSemaphoreCreateMutex();
-  #endif
+#endif
 
   // The order of starting the tasks matters to force priority inversion
 
@@ -129,4 +130,5 @@ void setup11() {
   vTaskDelete(NULL);
 }
 
-void loop11() {}
+void loop() {}
+}  // namespace Part11

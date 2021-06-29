@@ -6,6 +6,7 @@
 TickType_t mutex_timeout = 1000 / portTICK_PERIOD_MS;
 #endif
 
+namespace Part10 {
 static SemaphoreHandle_t mutex_1;
 static SemaphoreHandle_t mutex_2;
 
@@ -125,7 +126,7 @@ void doTaskB(void *parameters) {
   }
 }
 
-void setup10() {
+void setup() {
   Serial.begin(115200);
 
   vTaskDelay(1000 / portTICK_PERIOD_MS);  // Wait a moment to start
@@ -146,4 +147,5 @@ void setup10() {
   vTaskDelete(NULL);
 }
 
-void loop10() {}
+void loop() {}
+}  // namespace Part10

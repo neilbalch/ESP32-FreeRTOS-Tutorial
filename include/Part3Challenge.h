@@ -1,6 +1,8 @@
 #include "config.h"
 
+namespace Part3Challenge {
 void inputTask(void* param);
 void blinkTask(void* param);
-void setup3challenge();
-void loop3challenge();
+void setup();
+void loop();
+}  // namespace Part3Challenge

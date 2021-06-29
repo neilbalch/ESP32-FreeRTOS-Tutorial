@@ -1,5 +1,7 @@
 #include "config.h"
 
+namespace Part6Challenge {
 void blinkLED(void* param);
-void setup6challenge();
-void loop6challenge();
+void setup();
+void loop();
+}  // namespace Part6Challenge

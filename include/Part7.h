@@ -1,6 +1,8 @@
 #include "config.h"
 
-void blinkLED2(void* param);
+namespace Part7 {
+void blinkLED(void* param);
 void myTask(void* param);
-void setup7();
-void loop7();
+void setup();
+void loop();
+}

@@ -7,6 +7,7 @@
 #define configUSE_TIMERS 1
 #endif
 
+namespace Part8Challenge {
 static TimerHandle_t backlight_timer = NULL;
 static bool backlight_on = false;
 
@@ -16,15 +17,15 @@ void backlightTimerCallback(TimerHandle_t xTimer) {
 }
 
 void backlightTask(void* param) {
-  while(1) {
+  while (1) {
     digitalWrite(led_pin, backlight_on);
     vTaskDelay(100 / portTICK_PERIOD_MS);
   }
 }
 
 void terminalTask(void* param) {
-  while(1) {
-    if(Serial.available()) {
+  while (1) {
+    if (Serial.available()) {
       char curr = Serial.read();
       Serial.print(curr);
       xTimerStart(backlight_timer, portMAX_DELAY);
@@ -37,24 +38,24 @@ void terminalTask(void* param) {
   }
 }
 
-void setup8challenge() {
+void setup() {
   Serial.begin(115200);
   pinMode(led_pin, OUTPUT);
 
-  vTaskDelay(1000 / portTICK_PERIOD_MS); // Wait a moment to start
+  vTaskDelay(1000 / portTICK_PERIOD_MS);  // Wait a moment to start
   Serial.println();
   Serial.println("--- FreeRTOS Timer Demo ---");
 
   // Create one-shot timer
-  backlight_timer = xTimerCreate("Backlight timer",          // Timer name
-                                 5000 / portTICK_PERIOD_MS,  // Timer period (ticks)
-                                 pdFALSE,                    // Auto-reload flag
-                                 (void*)0,                   // Timer ID
-                                 backlightTimerCallback);    // Callback func
-
+  backlight_timer =
+      xTimerCreate("Backlight timer",          // Timer name
+                   5000 / portTICK_PERIOD_MS,  // Timer period (ticks)
+                   pdFALSE,                    // Auto-reload flag
+                   (void*)0,                   // Timer ID
+                   backlightTimerCallback);    // Callback func
 
   // Check to make sure that the timer was created successfully
-  if(backlight_timer == NULL) Serial.println("Couldn't create timer!");
+  if (backlight_timer == NULL) Serial.println("Couldn't create timer!");
 
   xTaskCreate(backlightTask, "Backlight Task", 1024, NULL, 1, NULL);
   xTaskCreate(terminalTask, "Terminal Task", 1024, NULL, 1, NULL);
@@ -63,5 +64,5 @@ void setup8challenge() {
   vTaskDelete(NULL);
 }
 
-void loop8challenge() {
-}
+void loop() {}
+}  // namespace Part8Challenge

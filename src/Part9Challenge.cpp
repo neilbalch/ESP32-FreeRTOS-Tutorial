@@ -10,6 +10,7 @@
 // You'll likely need this on vanilla FreeRTOS
 //#include semphr.h
 
+namespace Part9Challenge {
 static const char command[] = "avg";              // Command
 static const uint16_t timer_divider = 8;          // Divide 80 MHz by this
 static const uint64_t timer_max_count = 1000000;  // Timer counts to this value
@@ -18,8 +19,6 @@ enum { BUF_LEN = 10 };       // Number of elements in sample buffer
 enum { MSG_LEN = 100 };      // Max characters in message body
 enum { MSG_QUEUE_LEN = 5 };  // Number of slots in message queue
 enum { CMD_BUF_LEN = 255 };  // Number of characters in command buffer
-
-static const int adc_pin = 1;
 
 // Message struct to wrap strings for queue
 typedef struct Message {
@@ -182,7 +181,7 @@ void calcAverage(void *parameters) {
   }
 }
 
-void setup9challenge() {
+void setup() {
   // Configure Serial
   Serial.begin(115200);
 
@@ -229,4 +228,5 @@ void setup9challenge() {
   vTaskDelete(NULL);
 }
 
-void loop9challenge() {}
+void loop() {}
+}
