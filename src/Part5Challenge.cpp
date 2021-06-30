@@ -8,10 +8,11 @@ static QueueHandle_t led_queue;
 
 static int led_delay = 500;
 static int led_blink_count = 0;
+const char* blink_msg = "Blinked";
 
 struct TerminalMessage {
-  char* msg;
-  int msg_len;
+  const char* msg;
+  size_t msg_len;
   int num_blinks;
 };
 
@@ -25,7 +26,7 @@ void terminal(void* param) {
   while (1) {
     if (xQueueReceive(terminal_queue, (void*)&item, 0 /* tick timeout */) ==
         pdTRUE) {
-      if (strcmp(item.msg, "Blinked") == 0) {
+      if (strcmp(item.msg, blink_msg) == 0) {
         Serial.print("LED has blinked ");
         Serial.print(item.num_blinks);
         Serial.println(" times");
@@ -77,7 +78,7 @@ void ledControl(void* param) {
     ++led_blink_count;
 
     if (led_blink_count % 100 == 0) {
-      TerminalMessage msg = {"Blinked", 7, led_blink_count};
+      TerminalMessage msg = {blink_msg, strlen(blink_msg), led_blink_count};
       xQueueSend(terminal_queue, (void*)&msg, 0);
     }
   }
